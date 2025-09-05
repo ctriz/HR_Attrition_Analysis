@@ -127,8 +127,16 @@ Raw + Synthetic + Market Data → Preprocessing → Feature Engineering →
 Bias-Aware ML Training → Evaluation (Performance + Fairness) →
 Deployment as API → Dashboard Monitoring
 
+This architecture illustrates not just attrition prediction but also **responsible ML design** — integrating fairness, explainability, and deployment-readiness into a single reproducible pipeline.
+
 ```
+<img width="1172" height="886" alt="Screenshot 2025-09-05 225458" src="https://github.com/user-attachments/assets/b4e8a532-a339-4180-b548-557c68a6a1fd" />
+<img width="1195" height="897" alt="Screenshot 2025-09-05 225423" src="https://github.com/user-attachments/assets/5eb888ba-c5f5-4ee0-ae79-8cae2af3b5e4" />
+<img width="1194" height="791" alt="Screenshot 2025-09-05 225351" src="https://github.com/user-attachments/assets/91e17167-b1c3-4c07-b02d-38878a0c2c99" />
+<img width="1203" height="924" alt="Screenshot 2025-09-05 225255" src="https://github.com/user-attachments/assets/350c0e6e-15ae-4353-b31a-ce82adde6fbf" />
+
+
 
 ----------
 
-This architecture illustrates not just attrition prediction but also **responsible ML design** — integrating fairness, explainability, and deployment-readiness into a single reproducible pipeline.
+
