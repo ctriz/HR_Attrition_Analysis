@@ -1,0 +1,181 @@
+(.venv) C:\Attrition Analysis\src\modelling>python model_training.py
+============================================================
+Starting HR Attrition Data Processing Pipeline
+============================================================
+Loading data from C:\UpScale\HRProject\Attrition Analysis\data\raw\HRAttrition.csv...
+Loaded 1470 records with 35 columns
+Generating synthetic survey data...
+Generating text survey responses with sentiment analysis...
+Creating join and leave years...
+Processing unemployment data...
+Data loaded successfully.
+Error processing unemployment data: list indices must be integers or slices, not str. Skipping merge.
+Applying categorical mappings...
+Removing columns: ['EmployeeCount', 'EmployeeNumber', 'Over18', 'StandardHours']
+
+Final dataset shape: (1470, 41)
+Categorical features: 17
+
+Processed data saved to C:\UpScale\HRProject\Attrition Analysis\data\raw\HRAttrition_Processed.csv
+
+============================================================
+Pipeline completed successfully!
+============================================================
+FeatureEngineer initialized.
+Original DataFrame shape: (1470, 41)
+
+Simulating demographic data...
+
+Converting categorical features to one-hot encoded format...
+One-hot encoding applied. New shape: (1470, 79)
+
+Mitigating bias with respect to 'Gender'...
+Bias mitigation logic would be implemented here.
+Fairlearn's ExponentiatedGradient is an excellent choice.
+
+Generating new features with Featuretools...
+Featuretools generated 79 features.
+
+Checking for non-numeric columns after feature generation...
+No new categorical columns found. Proceeding with feature selection.
+
+Performing feature selection with Lasso Regression...
+Converting target variable to numerical format...
+Lasso selected 53 features.
+
+==================================================
+Pipeline Completed.
+==================================================
+
+Final selected features for model training:
+['Age', 'DailyRate', 'DistanceFromHome', 'MonthlyIncome', 'NumCompaniesWorked', 'StockOptionLevel', 'TotalWorkingYears', 'TrainingTimesLastYear', 'YearsInCurrentRole', 'YearsSinceLastPromotion', 'YearsWithCurrManager', 'Survey_Q1', 'Survey_Q3', 'Survey_Q5', 'Sentiment_Polarity', 'Engagement_Score', 'BusinessTravel_Travel_Frequently', 'BusinessTravel_Travel_Rarely', 'Department_Research & Development', 'Education_Below College', 'EducationField_Marketing', 'EducationField_Medical', 'EducationField_Other', 'EducationField_Technical Degree', 'EnvironmentSatisfaction_Low', 'EnvironmentSatisfaction_Medium', 'JobInvolvement_Low', 'JobInvolvement_Medium', 'JobInvolvement_Very High', 'JobLevel_Executive Level', 'JobLevel_Junior Level', 'JobLevel_Mid Level', 'JobRole_Laboratory Technician', 'JobRole_Research Director', 'JobRole_Research Scientist', 'JobRole_Sales Executive', 'JobRole_Sales Representative', 'JobSatisfaction_Low', 'JobSatisfaction_Very High', 'MaritalStatus_Single', 'OverTime_Yes', 'RelationshipSatisfaction_Low', 'RelationshipSatisfaction_Very High', 'WorkLifeBalance_Best', 'WorkLifeBalance_Better', 'WorkLifeBalance_Good', 'Survey_Text_Response_I enjoy the learning culture here.', 'Survey_Text_Response_I see limited progression options.', "Survey_Text_Response_I'm encouraged to explore new roles.", 'Survey_Text_Response_Long hours make it hard to spend time with family.', 'Survey_Text_Response_My career path aligns with my interests.', 'Survey_Text_Response_The company supports my growth plans.', 'Survey_Text_Response_Uncertain about my future path here.']
+ModelTrainer initialized.
+
+==================================================
+Starting Model Training and Evaluation Pipeline
+==================================================
+Sensitive feature 'Gender' not found. Using dummy for fairness analysis.
+
+==================================================
+Training standard RandomForestClassifier...
+Evaluating RandomForestClassifier...
+Accuracy: 0.8469
+ROC AUC: 0.7830
+
+Fairness Metrics:
+        accuracy   ROC AUC
+Gender
+0.0     0.846939  0.547119
+Demographic Parity Difference: 0.0000
+
+--------------------------------------------------
+Training debiased RandomForestClassifier with ExponentiatedGradient...
+Evaluating Debiased RandomForestClassifier...
+Accuracy: 0.8469
+ROC AUC cannot be computed as the model does not have a predict_proba method.
+
+Fairness Metrics:
+        accuracy
+Gender
+0.0     0.846939
+Demographic Parity Difference: 0.0000
+--------------------------------------------------
+
+==================================================
+Training standard LogisticRegression...
+Evaluating LogisticRegression...
+Accuracy: 0.8673
+ROC AUC: 0.8058
+
+Fairness Metrics:
+        accuracy   ROC AUC
+Gender
+0.0     0.867347  0.662632
+Demographic Parity Difference: 0.0000
+
+--------------------------------------------------
+Training debiased LogisticRegression with ExponentiatedGradient...
+Evaluating Debiased LogisticRegression...
+Accuracy: 0.8673
+ROC AUC cannot be computed as the model does not have a predict_proba method.
+
+Fairness Metrics:
+        accuracy
+Gender
+0.0     0.867347
+Demographic Parity Difference: 0.0000
+--------------------------------------------------
+
+==================================================
+Training standard XGBClassifier...
+Evaluating XGBClassifier...
+Accuracy: 0.8469
+ROC AUC: 0.7689
+
+Fairness Metrics:
+        accuracy   ROC AUC
+Gender
+0.0     0.846939  0.607417
+Demographic Parity Difference: 0.0000
+
+--------------------------------------------------
+Training debiased XGBClassifier with ExponentiatedGradient...
+Evaluating Debiased XGBClassifier...
+Accuracy: 0.8469
+ROC AUC cannot be computed as the model does not have a predict_proba method.
+
+Fairness Metrics:
+        accuracy
+Gender
+0.0     0.846939
+Demographic Parity Difference: 0.0000
+--------------------------------------------------
+
+==================================================
+Training standard SVC...
+Evaluating SVC...
+Accuracy: 0.8469
+ROC AUC: 0.8095
+
+Fairness Metrics:
+        accuracy   ROC AUC
+Gender
+0.0     0.846939  0.555733
+Demographic Parity Difference: 0.0000
+
+--------------------------------------------------
+Training debiased SVC with ExponentiatedGradient...
+Evaluating Debiased SVC...
+Accuracy: 0.8469
+ROC AUC cannot be computed as the model does not have a predict_proba method.
+
+Fairness Metrics:
+        accuracy
+Gender
+0.0     0.846939
+Demographic Parity Difference: 0.0000
+--------------------------------------------------
+Sensitive feature 'Gender' not found. Using dummy for fairness analysis.
+
+==================================================
+Beginning Hyperparameter Optimization for XGBoost
+==================================================
+ModelOptimizer initialized.
+
+Starting hyperparameter optimization with GridSearchCV...
+Fitting 5 folds for each of 27 candidates, totalling 135 fits
+
+Hyperparameter optimization completed.
+Best parameters found: {'learning_rate': 0.2, 'max_depth': 5, 'n_estimators': 300}
+Best cross-validation roc_auc score: 0.8189
+
+Evaluating the optimized model on the test set...
+Optimized Model Accuracy: 0.7428
+
+Applying bias mitigation to the optimized model...
+Demographic Parity Difference (After Mitigation): 0.0000
+
+Optimization and final evaluation complete.
+
+Final model, scaler, and label encoder saved to C:\Attrition Analysis\api\model.pkl
+
