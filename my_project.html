@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Attrition Prediction - Evaluation Dashboard</title>
+    <!-- Use Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
+    <!-- Plotly.js for interactive charts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.26.0/plotly.min.js"></script>
+    <!-- Lodash for utility functions -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            flex-direction: column;
+        }
+        .dashboard-container {
+            width: 100%;
+            max-width: 1200px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .tab-buttons {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            gap: 1rem;
+        }
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: #fff;
+            font-weight: 500;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .tab-button.active {
+            background: #fff;
+            color: #764ba2;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .tab-panel {
+            min-height: 500px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .chart-container {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 1rem;
+            padding: 1rem;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: #e0e0e0;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .metric-card {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+        .metric-card .value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #fff;
+            margin-top: 0.5rem;
+        }
+        .metric-card .label {
+            font-size: 0.9rem;
+            color: #ccc;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .model-card {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border: 2px solid transparent;
+        }
+        .model-card.selected {
+            border: 2px solid #3498db;
+            box-shadow: 0 0 20px rgba(52, 152, 219, 0.5);
+            transform: scale(1.05);
+        }
+        .model-card h3 {
+            color: #fff;
+        }
+        .model-card p {
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            .dashboard-container {
+                padding: 1rem;
+            }
+            .header h1 {
+                font-size: 2rem;
+            }
+            .tab-buttons {
+                flex-direction: column;
+            }
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
+
+    <div class="dashboard-container">
+        <!-- Dashboard Header -->
+        <div class="header">
+            <h1>HR Attrition Prediction Dashboard</h1>
+            <p class="text-white text-opacity-80 mt-2">Interactive Evaluation of Machine Learning Models</p>
+        </div>
+
+        <!-- Tab Buttons -->
+        <div class="tab-buttons">
+            <button class="tab-button active" onclick="showTab('metricsTab')">Overall Metrics</button>
+            <button class="tab-button" onclick="showTab('fairnessTab')">Fairness & Bias</button>
+            <button class="tab-button" onclick="showTab('featuresTab')">Feature Analysis</button>
+            <button class="tab-button" onclick="showTab('comparisonTab')">Model Comparison</button>
+        </div>
+
+        <!-- Tab Panels -->
+        <div id="metricsTab" class="tab-panel">
+            <h2>Overall Performance Metrics</h2>
+            <div class="charts-grid">
+                <div class="metric-card">
+                    <div class="label">Accuracy</div>
+                    <div class="value" id="accuracyValue">0.85</div>
+                </div>
+                <div class="metric-card">
+                    <div class="label">ROC AUC</div>
+                    <div class="value" id="rocAucValue">0.92</div>
+                </div>
+                <div class="metric-card">
+                    <div class="label">F1 Score</div>
+                    <div class="value" id="f1ScoreValue">0.78</div>
+                </div>
+            </div>
+            <div class="chart-container mt-6">
+                <h3>ROC Curve</h3>
+                <div id="rocCurve" style="height: 400px;"></div>
+            </div>
+        </div>
+
+        <div id="fairnessTab" class="tab-panel" style="display: none;">
+            <h2>Fairness & Bias Analysis</h2>
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h3>Fairness Metrics by Group</h3>
+                    <div id="fairnessByGroup" style="height: 400px;"></div>
+                </div>
+                <div class="chart-container">
+                    <h3>Bias Detection Heatmap</h3>
+                    <div id="biasHeatmap" style="height: 400px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="featuresTab" class="tab-panel" style="display: none;">
+            <h2>Feature Importance & Correlation</h2>
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h3>Feature Importance</h3>
+                    <div id="featureImportance" style="height: 500px;"></div>
+                </div>
+                <div class="chart-container">
+                    <h3>Feature Correlation Matrix</h3>
+                    <div id="correlationMatrix" style="height: 500px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="comparisonTab" class="tab-panel" style="display: none;">
+            <h2>Model Comparison</h2>
+            <div class="charts-grid">
+                <div class="model-card selected" onclick="selectModel('Random Forest')">
+                    <h3>Random Forest</h3>
+                    <p>High performance, good for complex data.</p>
+                </div>
+                <div class="model-card" onclick="selectModel('XGBoost')">
+                    <h3>XGBoost</h3>
+                    <p>Powerful and efficient, often top performer.</p>
+                </div>
+            </div>
+            <div class="charts-grid mt-6">
+                <div class="chart-container">
+                    <h3>Model Comparison Radar Chart</h3>
+                    <div id="radarChart" style="height: 400px;"></div>
+                </div>
+                <div class="chart-container">
+                    <h3>Fairness vs Performance Trade-off</h3>
+                    <div id="tradeOffChart" style="height: 400px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data to be used for the dashboard
+        const modelData = {
+            'Random Forest': {
+                accuracy: 0.85,
+                rocAuc: 0.92,
+                f1Score: 0.78,
+                rocTrace: {
+                    x: [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+                    y: [0.0, 0.5, 0.65, 0.75, 0.82, 0.88, 0.92, 0.95, 0.97, 0.99, 1.0],
+                    name: 'Random Forest ROC',
+                    line: {color: '#3498db', width: 2}
+                },
+                fairnessData: {
+                    male: {
+                        truePositive: 0.75,
+                        trueNegative: 0.88
+                    },
+                    female: {
+                        truePositive: 0.68,
+                        trueNegative: 0.90
+                    }
+                },
+                biasHeatmap: [
+                    [0.85, 0.82, 0.80],
+                    [0.75, 0.72, 0.78],
+                    [0.80, 0.85, 0.90]
+                ],
+                featureImportance: {
+                    x: ['JobLevel', 'MonthlyIncome', 'JobSatisfaction', 'Age', 'YearsAtCompany'],
+                    y: [0.25, 0.22, 0.18, 0.15, 0.10],
+                    name: 'Random Forest Feature Importance'
+                },
+                correlationMatrix: {
+                    z: [[1.0, 0.7, 0.2], [0.7, 1.0, -0.4], [0.2, -0.4, 1.0]],
+                    x: ['MonthlyIncome', 'JobLevel', 'YearsAtCompany'],
+                    y: ['MonthlyIncome', 'JobLevel', 'YearsAtCompany']
+                },
+                radar: {
+                    r: [0.92, 0.85, 0.78, 0.80, 0.75],
+                    theta: ['ROC AUC', 'Accuracy', 'F1 Score', 'Fairness', 'Interpretability'],
+                    name: 'Random Forest'
+                }
+            },
+            'XGBoost': {
+                accuracy: 0.87,
+                rocAuc: 0.94,
+                f1Score: 0.81,
+                rocTrace: {
+                    x: [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+                    y: [0.0, 0.55, 0.7, 0.8, 0.85, 0.91, 0.94, 0.97, 0.98, 1.0, 1.0],
+                    name: 'XGBoost ROC',
+                    line: {color: '#e74c3c', width: 2}
+                },
+                fairnessData: {
+                    male: {
+                        truePositive: 0.78,
+                        trueNegative: 0.86
+                    },
+                    female: {
+                        truePositive: 0.70,
+                        trueNegative: 0.89
+                    }
+                },
+                biasHeatmap: [
+                    [0.87, 0.84, 0.81],
+                    [0.78, 0.75, 0.80],
+                    [0.82, 0.87, 0.92]
+                ],
+                featureImportance: {
+                    x: ['MonthlyIncome', 'JobLevel', 'YearsAtCompany', 'Age', 'OverTime'],
+                    y: [0.28, 0.25, 0.20, 0.12, 0.08],
+                    name: 'XGBoost Feature Importance'
+                },
+                correlationMatrix: {
+                    z: [[1.0, 0.65, 0.25], [0.65, 1.0, -0.45], [0.25, -0.45, 1.0]],
+                    x: ['MonthlyIncome', 'JobLevel', 'YearsAtCompany'],
+                    y: ['MonthlyIncome', 'JobLevel', 'YearsAtCompany']
+                },
+                radar: {
+                    r: [0.94, 0.87, 0.81, 0.78, 0.70],
+                    theta: ['ROC AUC', 'Accuracy', 'F1 Score', 'Fairness', 'Interpretability'],
+                    name: 'XGBoost'
+                }
+            }
+        };
+
+        let currentModel = 'Random Forest';
+
+        // Function to show a specific tab
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-panel').forEach(panel => {
+                panel.style.display = 'none';
+            });
+            document.getElementById(tabId).style.display = 'block';
+
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            document.querySelector(`[onclick="showTab('${tabId}')"]`).classList.add('active');
+
+            // Re-render charts for the active tab
+            if (tabId === 'metricsTab') {
+                updateMetrics(currentModel);
+                drawRocCurve(currentModel);
+            } else if (tabId === 'fairnessTab') {
+                drawFairnessByGroup(currentModel);
+                drawBiasHeatmap(currentModel);
+            } else if (tabId === 'featuresTab') {
+                drawFeatureImportance(currentModel);
+                drawCorrelationMatrix(currentModel);
+            } else if (tabId === 'comparisonTab') {
+                drawRadarChart();
+                drawTradeOffChart();
+            }
+        }
+
+        // Function to select a model and update the dashboard
+        function selectModel(modelName) {
+            currentModel = modelName;
+            document.querySelectorAll('.model-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.querySelector(`[onclick="selectModel('${modelName}')"]`).classList.add('selected');
+            
+            // Re-render all charts with the new model data
+            showTab(document.querySelector('.tab-button.active').getAttribute('onclick').match(/'(.*?)'/)[1]);
+        }
+        
+        // Function to update the main metric cards
+        function updateMetrics(modelName) {
+            const data = modelData[modelName];
+            document.getElementById('accuracyValue').innerText = data.accuracy;
+            document.getElementById('rocAucValue').innerText = data.rocAuc;
+            document.getElementById('f1ScoreValue').innerText = data.f1Score;
+        }
+
+        // --- Chart Drawing Functions using Plotly.js ---
+
+        // Draws the ROC Curve
+        function drawRocCurve(modelName) {
+            const data = modelData[modelName];
+            const rocTrace = data.rocTrace;
+            const layout = {
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                font: { color: '#fff' },
+                xaxis: { title: 'False Positive Rate', gridcolor: 'rgba(255,255,255,0.2)' },
+                yaxis: { title: 'True Positive Rate', gridcolor: 'rgba(255,255,255,0.2)' },
+                title: 'ROC Curve',
+                shapes: [{
+                    type: 'line',
+                    xref: 'paper', yref: 'paper',
+                    x0: 0, y0: 0,
+                    x1: 1, y1: 1,
+                    line: { color: 'rgba(255,255,255,0.5)', width: 1, dash: 'dot' }
+                }]
+            };
+            Plotly.newPlot('rocCurve', [rocTrace], layout);
+        }
+
+        // Draws the fairness bar chart
+        function drawFairnessByGroup(modelName) {
+            const data = modelData[modelName].fairnessData;
+            const trace1 = {
+                x: ['Male', 'Female'],
+                y: [data.male.truePositive, data.female.truePositive],
+                name: 'True Positive Rate',
+                type: 'bar',
+                marker: { color: '#27ae60' }
+            };
+            const trace2 = {
+                x: ['Male', 'Female'],
+                y: [data.male.trueNegative, data.female.trueNegative],
+                name: 'True Negative Rate',
+                type: 'bar',
+                marker: { color: '#3498db' }
+            };
+            const layout = {
+                barmode: 'group',
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                font: { color: '#fff' },
+                xaxis: { title: 'Gender Group' },
+                yaxis: { title: 'Rate' }
+            };
+            Plotly.newPlot('fairnessByGroup', [trace1, trace2], layout);
+        }
+
+        // Draws the bias heatmap
+        function drawBiasHeatmap(modelName) {
+            const data = modelData[modelName].biasHeatmap;
+            const trace = {
+                z: data,
+                x: ['Group A', 'Group B', 'Group C'],
+                y: ['Metric 1', 'Metric 2', 'Metric 3'],
+                type: 'heatmap',
+                colorscale: 'YlGnBu'
+            };
+            const layout = {
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                font: { color: '#fff' },
+                xaxis: { title: 'Feature' },
+                yaxis: { title: 'Metric' }
+            };
+            Plotly.newPlot('biasHeatmap', [trace], layout);
+        }
+
+        // Draws the feature importance bar chart
+        function drawFeatureImportance(modelName) {
+            const data = modelData[modelName].featureImportance;
+            const trace = {
+                x: data.y,
+                y: data.x,
+                type: 'bar',
+                orientation: 'h',
+                marker: { color: '#f39c12' }
+            };
+            const layout = {
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                font: { color: '#fff' },
+                xaxis: { title: 'Importance Score' },
+                yaxis: { title: 'Feature', automargin: true }
+            };
+            Plotly.newPlot('featureImportance', [trace], layout);
+        }
+
+        // Draws the correlation matrix heatmap
+        function drawCorrelationMatrix(modelName) {
+            const data = modelData[modelName].correlationMatrix;
+            const trace = {
+                z: data.z,
+                x: data.x,
+                y: data.y,
+                type: 'heatmap',
+                colorscale: 'Viridis'
+            };
+            const layout = {
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                font: { color: '#fff' },
+                xaxis: { title: 'Features' },
+                yaxis: { title: 'Features' }
+            };
+            Plotly.newPlot('correlationMatrix', [trace], layout);
+        }
+
+        // Draws the model comparison radar chart
+        function drawRadarChart() {
+            const rfData = modelData['Random Forest'].radar;
+            const xgbData = modelData['XGBoost'].radar;
+            
+            const trace1 = {
+                type: 'scatterpolar',
+                r: rfData.r,
+                theta: rfData.theta,
+                fill: 'toself',
+                name: 'Random Forest',
+                marker: { color: '#3498db' }
+            };
+            const trace2 = {
+                type: 'scatterpolar',
+                r: xgbData.r,
+                theta: xgbData.theta,
+                fill: 'toself',
+                name: 'XGBoost',
+                marker: { color: '#e74c3c' }
+            };
+            const layout = {
+                polar: {
+                    radialaxis: { visible: true, range: [0, 1], gridcolor: 'rgba(255,255,255,0.2)' },
+                    angularaxis: { gridcolor: 'rgba(255,255,255,0.2)' }
+                },
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                font: { color: '#fff' },
+                showlegend: true
+            };
+            Plotly.newPlot('radarChart', [trace1, trace2], layout);
+        }
+
+        // Draws the trade-off scatter plot
+        function drawTradeOffChart() {
+            const rf = modelData['Random Forest'];
+            const xgb = modelData['XGBoost'];
+            
+            const trace1 = {
+                x: [rf.fairnessData.female.truePositive],
+                y: [rf.rocAuc],
+                mode: 'markers',
+                type: 'scatter',
+                name: 'Random Forest',
+                marker: { size: 12, color: '#3498db' }
+            };
+            const trace2 = {
+                x: [xgb.fairnessData.female.truePositive],
+                y: [xgb.rocAuc],
+                mode: 'markers',
+                type: 'scatter',
+                name: 'XGBoost',
+                marker: { size: 12, color: '#e74c3c' }
+            };
+            const layout = {
+                xaxis: { title: 'Fairness (True Positive Rate for Female Group)', range: [0.6, 0.8] },
+                yaxis: { title: 'Performance (ROC AUC)', range: [0.85, 0.95] },
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                font: { color: '#fff' }
+            };
+            Plotly.newPlot('tradeOffChart', [trace1, trace2], layout);
+        }
+
+        // Initial rendering of the dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            showTab('metricsTab');
+        });
+    </script>
+
+</body>
+</html>

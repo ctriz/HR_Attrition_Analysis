@@ -1,0 +1,13 @@
+pandas
+numpy
+matplotlib
+seaborn
+pathlib
+requests
+typing
+textblob
+scikit-learn
+fairlearn
+featuretools
+xgboost
+pickle

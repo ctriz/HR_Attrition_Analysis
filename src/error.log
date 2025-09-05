@@ -1,0 +1,177 @@
+(.venv) C:\UpScale\HRProject\Attrition Analysis\src\modelling>python model_training.py
+============================================================
+Starting HR Attrition Data Processing Pipeline
+============================================================
+Loading data from C:\UpScale\HRProject\Attrition Analysis\data\raw\HRAttrition.csv...
+Loaded 1470 records with 35 columns
+Generating synthetic survey data...
+Generating text survey responses with sentiment analysis...
+Creating join and leave years...
+Processing unemployment data...
+Data loaded successfully.
+Error processing unemployment data: list indices must be integers or slices, not str. Skipping merge.
+Applying categorical mappings...
+Removing columns: ['EmployeeCount', 'EmployeeNumber', 'Over18', 'StandardHours']
+
+Final dataset shape: (1470, 41)
+Categorical features: 17
+
+Processed data saved to C:\UpScale\HRProject\Attrition Analysis\data\raw\HRAttrition_Processed.csv
+
+============================================================
+Pipeline completed successfully!
+============================================================
+FeatureEngineer initialized.
+Original DataFrame shape: (1470, 41)
+
+Simulating demographic data...
+
+Mitigating bias with respect to 'Gender'...
+Bias mitigation logic would be implemented here.
+Fairlearn's ExponentiatedGradient is an excellent choice.
+
+Generating new features with Featuretools...
+Featuretools generated 40 features.
+
+Performing feature selection with Lasso Regression...
+Generating synthetic survey data...
+Generating text survey responses with sentiment analysis...
+Creating join and leave years...
+Processing unemployment data...
+Data loaded successfully.
+Error processing unemployment data: list indices must be integers or slices, not str. Skipping merge.
+Applying categorical mappings...
+Removing columns: ['EmployeeCount', 'EmployeeNumber', 'Over18', 'StandardHours']
+
+Final dataset shape: (1470, 41)
+Categorical features: 17
+
+Processed data saved to C:\UpScale\HRProject\Attrition Analysis\data\raw\HRAttrition_Processed.csv
+
+============================================================
+Pipeline completed successfully!
+============================================================
+FeatureEngineer initialized.
+Original DataFrame shape: (1470, 41)
+
+Simulating demographic data...
+
+Mitigating bias with respect to 'Gender'...
+Bias mitigation logic would be implemented here.
+Fairlearn's ExponentiatedGradient is an excellent choice.
+
+Generating new features with Featuretools...
+Featuretools generated 40 features.
+
+Performing feature selection with Lasso Regression...
+Processing unemployment data...
+Data loaded successfully.
+Error processing unemployment data: list indices must be integers or slices, not str. Skipping merge.
+Applying categorical mappings...
+Removing columns: ['EmployeeCount', 'EmployeeNumber', 'Over18', 'StandardHours']
+
+Final dataset shape: (1470, 41)
+Categorical features: 17
+
+Processed data saved to C:\UpScale\HRProject\Attrition Analysis\data\raw\HRAttrition_Processed.csv
+
+============================================================
+Pipeline completed successfully!
+============================================================
+FeatureEngineer initialized.
+Original DataFrame shape: (1470, 41)
+
+Simulating demographic data...
+
+Mitigating bias with respect to 'Gender'...
+Bias mitigation logic would be implemented here.
+Fairlearn's ExponentiatedGradient is an excellent choice.
+
+Generating new features with Featuretools...
+Featuretools generated 40 features.
+
+Performing feature selection with Lasso Regression...
+
+Processed data saved to C:\UpScale\HRProject\Attrition Analysis\data\raw\HRAttrition_Processed.csv
+
+============================================================
+Pipeline completed successfully!
+============================================================
+FeatureEngineer initialized.
+Original DataFrame shape: (1470, 41)
+
+Simulating demographic data...
+
+Mitigating bias with respect to 'Gender'...
+Bias mitigation logic would be implemented here.
+Fairlearn's ExponentiatedGradient is an excellent choice.
+
+Generating new features with Featuretools...
+Featuretools generated 40 features.
+
+Performing feature selection with Lasso Regression...
+============================================================
+FeatureEngineer initialized.
+Original DataFrame shape: (1470, 41)
+
+Simulating demographic data...
+
+Mitigating bias with respect to 'Gender'...
+Bias mitigation logic would be implemented here.
+Fairlearn's ExponentiatedGradient is an excellent choice.
+
+Generating new features with Featuretools...
+Featuretools generated 40 features.
+
+Performing feature selection with Lasso Regression...
+Bias mitigation logic would be implemented here.
+Fairlearn's ExponentiatedGradient is an excellent choice.
+
+Generating new features with Featuretools...
+Featuretools generated 40 features.
+
+Performing feature selection with Lasso Regression...
+Converting target variable to numerical format...
+An error occurred: Cannot cast object dtype to float64
+
+(.venv) C:\UpScale\HRProject\Attrition Analysis\src\modelling>python model_training.py
+============================================================
+Starting HR Attrition Data Processing Pipeline
+============================================================
+Loading data from C:\UpScale\HRProject\Attrition Analysis\data\raw\HRAttrition.csv...
+Loaded 1470 records with 35 columns
+Generating synthetic survey data...
+Generating text survey responses with sentiment analysis...
+Creating join and leave years...
+Processing unemployment data...
+Data loaded successfully.
+Error processing unemployment data: list indices must be integers or slices, not str. Skipping merge.
+Applying categorical mappings...
+Removing columns: ['EmployeeCount', 'EmployeeNumber', 'Over18', 'StandardHours']
+
+Final dataset shape: (1470, 41)
+Categorical features: 17
+
+Processed data saved to C:\UpScale\HRProject\Attrition Analysis\data\raw\HRAttrition_Processed.csv
+
+============================================================
+Pipeline completed successfully!
+============================================================
+FeatureEngineer initialized.
+Original DataFrame shape: (1470, 41)
+
+Simulating demographic data...
+
+Mitigating bias with respect to 'Gender'...
+Bias mitigation logic would be implemented here.
+Fairlearn's ExponentiatedGradient is an excellent choice.
+
+Generating new features with Featuretools...
+Featuretools generated 40 features.
+
+Checking for non-numeric columns after feature generation...
+No new categorical columns found. Proceeding with feature selection.
+
+Performing feature selection with Lasso Regression...
+Converting target variable to numerical format...
+An error occurred: Cannot cast object dtype to float64
